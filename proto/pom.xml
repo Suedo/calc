@@ -11,7 +11,6 @@
 
     <artifactId>proto</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>proto</name>
     <description>protobuf library</description>
     <properties>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>

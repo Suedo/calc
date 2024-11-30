@@ -7,11 +7,10 @@
         <artifactId>demo</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>calculator</artifactId>
+    <artifactId>tokenizer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>calculator</name>
+    <name>tokenizer</name>
     <description>Demo project for Spring Boot</description>
-    <url/>
 
     <properties>
         <java.version>21</java.version>
@@ -30,22 +29,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <!-- Spring Boot gRPC Starter -->
-        <dependency>
-            <groupId>net.devh</groupId>
-            <artifactId>grpc-server-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.devh</groupId>
-            <artifactId>grpc-client-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>example.calc</groupId>
-            <artifactId>proto</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 

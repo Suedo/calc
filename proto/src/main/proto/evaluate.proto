@@ -1,5 +1,9 @@
 syntax = "proto3";
 
+package calc;
+
+option java_package = "example.demo.proto";
+
 service EvaluateService {
     rpc evaluate (EvaluateRequest) returns (EvaluateResponse);
 }
