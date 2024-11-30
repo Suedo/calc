@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+service EvaluateService {
+    rpc evaluate (EvaluateRequest) returns (EvaluateResponse);
+}
+
+message EvaluateRequest {
+    string expression = 1;
+}
+
+message EvaluateResponse {
+    double result = 1;
+}

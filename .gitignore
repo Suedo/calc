@@ -1,0 +1,13 @@
+# Ignore all target directories in all submodules
+**/target/
+
+# Ignore Maven wrapper files globally
+**/mvnw
+**/mvnw.cmd
+
+# Ignore IntelliJ project files
+.idea
+**/.idea/
+**/*.iml
+**/*.iws
+**/*.ipr
