@@ -1,11 +1,12 @@
-I want you to come up with a microservice based BODMAS rule calculator, using Java 21, SpringBoot 3.2, gRPC and Protobuf
-and REST based technologies.
+# Demo of high performance sync communication using gRPC and Virtual Threads
 
-Below is the highlevel understanding of:
+This project uses a simple domain, that of a Calculator, to demo the performance of sync blocking api calls using gRPC
+and Virtual threads
+We first look at the BODMAS rule for calculating arithmetic, which is accompanied by a simple java code that would take
+care of it.
 
-1. BODMAS rule
-2. Java monolithic Code that calculates a random generated infix notation as per BODMAS rule
-3. Desired Architechture of splitting the monolith into microservices, talking over rest and gRPC
+Then we create a Microservice Architechture to mimic many small but frequent sync communications, and then see how much
+we can optimize it
 
 ## 1. BODMAS rule
 
@@ -190,8 +191,13 @@ public class BODMASCalculator {
 
 ## 3. Desired Microservice Architechture:
 
-Now let's refine the monolithic codebase under `BODMASCalculator` above in a more microservice based architechture:
-You can refer the attached flow diagram which has a highlevel view
+**Flow Diagram**
+
+Based on the below flow diagram, we will refine the monolithic codebase under `BODMASCalculator` above in a more
+microservice based architechture:
+
+![flow diagram](flow.jpg)
+
 
 ---
 
