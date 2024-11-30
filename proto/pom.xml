@@ -11,10 +11,13 @@
 
     <artifactId>proto</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
     <description>protobuf library</description>
-    <properties>
-        <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
-    </properties>
+    <!--    Properties doesn't seem to work   -->
+    <!--    <properties>-->
+    <!--        <spring-boot.repackage.skip>true</spring-boot.repackage.skip>-->
+    <!--        <skip.image.build>true</skip.image.build>-->
+    <!--    </properties>-->
 
     <dependencies>
         <dependency>
@@ -44,6 +47,21 @@
             </extension>
         </extensions>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <!-- SInce this is a Library, skip repackage (executable jar creation) and Image creation-->
+                <executions>
+                    <execution>
+                        <id>repackage</id>
+                        <phase>none</phase> <!-- Disable repackage -->
+                    </execution>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>none</phase> <!-- Disable image build -->
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
