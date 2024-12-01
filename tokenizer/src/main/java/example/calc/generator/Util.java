@@ -13,11 +13,11 @@ import java.util.regex.Pattern;
 
 public class Util {
 
+    private final static Pattern pattern = Pattern.compile("\\d+|[+\\-*/()]");
 
     public static List<Token> tokenize(String expression) {
-        Pattern pattern = Pattern.compile("\\d+|[+\\-*/()]");
-        Matcher matcher = pattern.matcher(expression);
         List<Token> tokens = new ArrayList<>();
+        Matcher matcher = pattern.matcher(expression);
 
         while (matcher.find()) {
             String match = matcher.group();

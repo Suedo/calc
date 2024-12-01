@@ -20,6 +20,7 @@ class UtilTest {
     private final static List<Token> infixTokenList = convertToTokenList(infix);
     private final static List<Token> postfixTokenList = convertToTokenList(postFix);
 
+    // todo: do a perf comparison between this and tokenize algorithm
     private static List<Token> convertToTokenList(String s) {
         List<Token> result = new ArrayList<>();
         for (String each : s.split(" ")) {
