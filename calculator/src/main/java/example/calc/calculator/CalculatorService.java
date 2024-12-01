@@ -1,7 +1,7 @@
 package example.calc.calculator;
 
-import example.demo.proto.CalculatorGrpc;
-import example.demo.proto.CalculatorOuterClass;
+import example.demo.shared.proto.CalculatorGrpc;
+import example.demo.shared.proto.CalculatorOuterClass;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 

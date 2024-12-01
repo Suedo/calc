@@ -1,8 +1,8 @@
 package example.calc.tester;
 
 
-import example.demo.proto.Evaluate;
-import example.demo.proto.EvaluateServiceGrpc;
+import example.demo.shared.proto.Evaluate;
+import example.demo.shared.proto.EvaluateServiceGrpc;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

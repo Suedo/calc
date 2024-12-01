@@ -20,7 +20,7 @@
         <module>generator</module>
         <module>tokenizer</module>
         <module>tester</module>
-        <module>proto</module>
+        <module>shared</module>
     </modules>
     <properties>
         <java.version>21</java.version>

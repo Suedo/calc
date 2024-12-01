@@ -1,9 +1,9 @@
 package example.calc.evaluator;
 
-import example.demo.proto.CalculatorGrpc;
-import example.demo.proto.CalculatorOuterClass;
-import example.demo.proto.Evaluate;
-import example.demo.proto.EvaluateServiceGrpc;
+import example.demo.shared.proto.CalculatorGrpc;
+import example.demo.shared.proto.CalculatorOuterClass;
+import example.demo.shared.proto.Evaluate;
+import example.demo.shared.proto.EvaluateServiceGrpc;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import net.devh.boot.grpc.server.service.GrpcService;

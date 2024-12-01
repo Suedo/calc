@@ -43,7 +43,7 @@
         </dependency>
         <dependency>
             <groupId>example.calc</groupId>
-            <artifactId>proto</artifactId>
+            <artifactId>shared</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
