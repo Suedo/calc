@@ -34,28 +34,23 @@ public class Util {
         Deque<OperatorToken> operatorStack = new ArrayDeque<>();
         List<Token> postfix = new ArrayList<>();
 
+        // Shunting Yard Algorithm
+        // for simplicity, not dealing with Brackets
         for (Token token : tokens) {
             if (token instanceof NumberToken numberToken) {
                 postfix.add(numberToken);
             } else if (token instanceof OperatorToken operatorToken) {
-                if (operatorToken.operator() == '(') {
-                    operatorStack.push(operatorToken);
-                } else if (operatorToken.operator() == ')') {
-                    while (!operatorStack.isEmpty() && operatorStack.peek().operator() != '(') {
-                        postfix.add(operatorStack.pop());
-                    }
-                    operatorStack.pop(); // Pop '('
-                } else {
-                    while (!operatorStack.isEmpty() && precedence(operatorStack.peek()) >= precedence(operatorToken)) {
-                        postfix.add(operatorStack.pop());
-                    }
-                    operatorStack.push(operatorToken);
+                while (!operatorStack.isEmpty() && precedence(operatorStack.peek()) >= precedence(operatorToken)) {
+                    postfix.add(operatorStack.pop());
                 }
+                operatorStack.push(operatorToken);
             }
         }
+
         while (!operatorStack.isEmpty()) {
             postfix.add(operatorStack.pop());
         }
+
         return postfix;
     }
 
@@ -63,7 +58,7 @@ public class Util {
         return switch (operatorToken.operator()) {
             case '+', '-' -> 1;
             case '*', '/' -> 2;
-            default -> 0;
+            default -> -1;
         };
     }
 }

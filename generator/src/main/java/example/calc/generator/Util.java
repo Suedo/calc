@@ -15,7 +15,8 @@ public class Util {
             } else { // Add an operator
                 expression.append(operators.charAt(random.nextInt(operators.length())));
             }
+            expression.append(" ");
         }
-        return expression.toString();
+        return expression.toString().trim();
     }
 }
