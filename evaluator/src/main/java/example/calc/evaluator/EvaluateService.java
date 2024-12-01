@@ -1,5 +1,8 @@
 package example.calc.evaluator;
 
+import example.demo.shared.domain.NumberToken;
+import example.demo.shared.domain.OperatorToken;
+import example.demo.shared.domain.Token;
 import example.demo.shared.proto.CalculatorGrpc;
 import example.demo.shared.proto.CalculatorOuterClass;
 import example.demo.shared.proto.Evaluate;
@@ -32,8 +35,8 @@ public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase
 
         try {
             // Step 1: Tokenize the expression (REST call to Tokenize Service)
-            Response<List<String>> response = tokenizeAPIService.tokenize(expression).execute();
-            List<String> tokens = response.body();
+            Response<List<Token>> response = tokenizeAPIService.tokenize(expression).execute();
+            List<Token> tokens = response.body();
 
             // Step 2: Evaluate the tokens (Postfix)
             assert tokens != null : "Tokens cannot be null";
@@ -51,20 +54,20 @@ public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase
         }
     }
 
-    private double evaluatePostfix(List<String> postfix) {
+    private double evaluatePostfix(List<Token> postfix) {
         Deque<Double> stack = new ArrayDeque<>();
 
-        for (String token : postfix) {
-            if (token.matches("\\d+")) {
-                stack.push(Double.parseDouble(token));
-            } else { // Operator
+        for (Token token : postfix) {
+            if (token instanceof NumberToken numberToken) {
+                stack.push(numberToken.value());
+            } else if (token instanceof OperatorToken operatorToken) {
                 double b = stack.pop();
                 double a = stack.pop();
 
                 CalculatorOuterClass.CalculatorRequest request = CalculatorOuterClass.CalculatorRequest.newBuilder()
                         .setA(a)
                         .setB(b)
-                        .setOperation(mapOperator(token))
+                        .setOperation(mapOperator(operatorToken))
                         .build();
 
                 double result = calculatorClient.calculate(request).getResult();
@@ -74,13 +77,13 @@ public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase
         return stack.pop();
     }
 
-    private CalculatorOuterClass.CalculatorRequest.Operation mapOperator(String operator) {
-        return switch (operator) {
-            case "+" -> CalculatorOuterClass.CalculatorRequest.Operation.ADD;
-            case "-" -> CalculatorOuterClass.CalculatorRequest.Operation.SUBTRACT;
-            case "*" -> CalculatorOuterClass.CalculatorRequest.Operation.MULTIPLY;
-            case "/" -> CalculatorOuterClass.CalculatorRequest.Operation.DIVIDE;
-            default -> throw new IllegalArgumentException("Unknown operator: " + operator);
+    private CalculatorOuterClass.CalculatorRequest.Operation mapOperator(OperatorToken operatorToken) {
+        return switch (operatorToken.operator()) {
+            case '+' -> CalculatorOuterClass.CalculatorRequest.Operation.ADD;
+            case '-' -> CalculatorOuterClass.CalculatorRequest.Operation.SUBTRACT;
+            case '*' -> CalculatorOuterClass.CalculatorRequest.Operation.MULTIPLY;
+            case '/' -> CalculatorOuterClass.CalculatorRequest.Operation.DIVIDE;
+            default -> throw new IllegalArgumentException("Unknown operator: " + operatorToken.operator());
         };
     }
 }
