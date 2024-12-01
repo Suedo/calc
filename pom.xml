@@ -87,6 +87,9 @@
     <profiles>
         <profile>
             <id>skip-docker</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
