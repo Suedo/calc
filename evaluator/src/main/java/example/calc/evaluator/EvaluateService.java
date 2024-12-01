@@ -4,7 +4,7 @@ import example.demo.shared.proto.CalculatorGrpc;
 import example.demo.shared.proto.CalculatorOuterClass;
 import example.demo.shared.proto.Evaluate;
 import example.demo.shared.proto.EvaluateServiceGrpc;
-import example.demo.shared.rest.TokenizeServiceAPI;
+import example.demo.shared.rest.TokenizeAPIService;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -18,11 +18,11 @@ import java.util.List;
 @GrpcService
 public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase {
 
-    private final TokenizeServiceAPI tokenizeServiceAPI;
+    private final TokenizeAPIService tokenizeAPIService;
     private final CalculatorGrpc.CalculatorBlockingStub calculatorClient;
 
-    public EvaluateService(TokenizeServiceAPI tokenizeServiceAPI, @GrpcClient("calculator") CalculatorGrpc.CalculatorBlockingStub calculatorClient) {
-        this.tokenizeServiceAPI = tokenizeServiceAPI;
+    public EvaluateService(TokenizeAPIService tokenizeAPIService, @GrpcClient("calculator") CalculatorGrpc.CalculatorBlockingStub calculatorClient) {
+        this.tokenizeAPIService = tokenizeAPIService;
         this.calculatorClient = calculatorClient;
     }
 
@@ -32,7 +32,7 @@ public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase
 
         try {
             // Step 1: Tokenize the expression (REST call to Tokenize Service)
-            Response<List<String>> response = tokenizeServiceAPI.tokenize(expression).execute();
+            Response<List<String>> response = tokenizeAPIService.tokenize(expression).execute();
             List<String> tokens = response.body();
 
             // Step 2: Evaluate the tokens (Postfix)

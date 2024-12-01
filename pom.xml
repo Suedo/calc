@@ -69,9 +69,6 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
-                    <!--                    <configuration>-->
-                    <!--                        <createdDate>now</createdDate>-->
-                    <!--                    </configuration>-->
                     <executions>
                         <execution>
                             <id>build-image</id>
@@ -85,5 +82,26 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <!-- Disable image build    -->
+    <profiles>
+        <profile>
+            <id>skip-docker</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>build-image</id>
+                                <phase>none</phase> <!-- Disable image build -->
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

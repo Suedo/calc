@@ -42,4 +42,14 @@ public class RetrofitConfig {
                 .addConverterFactory(GsonConverterFactory.create()) // to handle JSON response
                 .build();
     }
+
+    @Bean
+    public TokenizeAPIService tokenizeServiceAPI(Retrofit retrofit) {
+        return retrofit.create(TokenizeAPIService.class);
+    }
+
+    @Bean
+    public GenerateAPIService generateServiceAPI(Retrofit retrofit) {
+        return retrofit.create(GenerateAPIService.class);
+    }
 }

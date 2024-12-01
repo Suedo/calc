@@ -3,7 +3,7 @@ package example.calc.tester;
 
 import example.demo.shared.proto.Evaluate;
 import example.demo.shared.proto.EvaluateServiceGrpc;
-import example.demo.shared.rest.GenerateServiceAPI;
+import example.demo.shared.rest.GenerateAPIService;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,19 +17,19 @@ import java.io.IOException;
 @RequestMapping("/test")
 public class TestController {
 
-    private final GenerateServiceAPI generateServiceAPI;
+    private final GenerateAPIService generateAPIService;
     @GrpcClient("evaluate-service")
     private EvaluateServiceGrpc.EvaluateServiceBlockingStub evaluateServiceClient;
 
-    public TestController(GenerateServiceAPI generateServiceAPI) {
-        this.generateServiceAPI = generateServiceAPI;
+    public TestController(GenerateAPIService generateAPIService) {
+        this.generateAPIService = generateAPIService;
     }
 
     @GetMapping
     public double testFlow() {
         try {
             // Step 1: Generate a random expression
-            Response<String> response = generateServiceAPI.generateExpression().execute();
+            Response<String> response = generateAPIService.generateExpression().execute();
             String expression = response.body();
 
             // Step 2: Evaluate the expression via gRPC
