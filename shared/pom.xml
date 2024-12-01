@@ -13,11 +13,10 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <description>protobuf library</description>
-    <!--    Properties doesn't seem to work   -->
-    <!--    <properties>-->
-    <!--        <spring-boot.repackage.skip>true</spring-boot.repackage.skip>-->
-    <!--        <skip.image.build>true</skip.image.build>-->
-    <!--    </properties>-->
+    <properties>
+        <retrofit.version>2.11.0</retrofit.version>
+        <okhttp.version>4.12.0</okhttp.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -35,6 +34,44 @@
             <artifactId>annotations-api</artifactId>
             <version>${tomcat.annotations.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Retrofit -->
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+
+        <!-- Retrofit Converters -->
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-gson</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-scalars</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+
+        <!-- OkHttp Logging Interceptor -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>logging-interceptor</artifactId>
+            <version>${okhttp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
         </dependency>
     </dependencies>
 

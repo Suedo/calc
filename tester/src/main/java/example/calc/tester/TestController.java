@@ -3,37 +3,44 @@ package example.calc.tester;
 
 import example.demo.shared.proto.Evaluate;
 import example.demo.shared.proto.EvaluateServiceGrpc;
+import example.demo.shared.rest.GenerateServiceAPI;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
+import retrofit2.Response;
+
+import java.io.IOException;
 
 
 @RestController
 @RequestMapping("/test")
 public class TestController {
 
-    private final RestTemplate restTemplate;
-
+    private final GenerateServiceAPI generateServiceAPI;
     @GrpcClient("evaluate-service")
     private EvaluateServiceGrpc.EvaluateServiceBlockingStub evaluateServiceClient;
 
-    public TestController(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public TestController(GenerateServiceAPI generateServiceAPI) {
+        this.generateServiceAPI = generateServiceAPI;
     }
 
     @GetMapping
     public double testFlow() {
-        // Step 1: Generate a random expression
-        String expression = restTemplate.getForObject("http://generate-service/generate", String.class);
+        try {
+            // Step 1: Generate a random expression
+            Response<String> response = generateServiceAPI.generateExpression().execute();
+            String expression = response.body();
 
-        // Step 2: Evaluate the expression via gRPC
-        Evaluate.EvaluateRequest request = Evaluate.EvaluateRequest.newBuilder()
-                .setExpression(expression)
-                .build();
+            // Step 2: Evaluate the expression via gRPC
+            Evaluate.EvaluateRequest request = Evaluate.EvaluateRequest.newBuilder()
+                    .setExpression(expression)
+                    .build();
 
-        return evaluateServiceClient.evaluate(request).getResult();
+            return evaluateServiceClient.evaluate(request).getResult();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 
