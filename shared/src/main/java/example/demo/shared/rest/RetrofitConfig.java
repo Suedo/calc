@@ -1,6 +1,8 @@
 package example.demo.shared.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.binder.okhttp3.OkHttpObservationInterceptor;
+import io.micrometer.observation.ObservationRegistry;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.springframework.context.annotation.Bean;
@@ -29,8 +31,11 @@ public class RetrofitConfig {
     }
 
     @Bean
-    public Retrofit retrofit(ObjectMapper objectMapper) {
+    public Retrofit retrofit(ObjectMapper objectMapper, ObservationRegistry observationRegistry) {
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+                // This setup ensures that Retrofit utilizes the OkHttpClient configured with the observation interceptor,
+                // enabling tracing for all HTTP requests made through Retrofit.
+                .addInterceptor(OkHttpObservationInterceptor.builder(observationRegistry, "okhttp.requests").build())
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS);
 
