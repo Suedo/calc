@@ -17,17 +17,18 @@ scrape_configs:
     static_configs:
       - targets: [ 'host.docker.internal:8182' ]
 
-  - job_name: 'evaluate-service'
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: [ 'host.docker.internal:8190' ]
-
   - job_name: 'tokenize-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: [ 'host.docker.internal:8184' ]
 
+  # grpc applications, listen to separate management ports
+  - job_name: 'evaluate-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'host.docker.internal:8191' ]
+
   - job_name: 'calculator-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'host.docker.internal:8192' ]
+      - targets: [ 'host.docker.internal:8193' ]

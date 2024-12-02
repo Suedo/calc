@@ -473,4 +473,108 @@ public static void main(String[] args) throws JsonProcessingException {
 ---
 
 This setup allows the seamless use of `sealed` hierarchies as domain models with Retrofit and Jackson in a Spring Boot
-application. Save this README for quick onboarding of team members or future reference!
+application.
+
+---
+
+## **Exposing Prometheus Metrics for gRPC Servers**
+
+### **Overview**
+
+gRPC servers use HTTP/2 by default, but Prometheus requires an HTTP/1.x endpoint to scrape metrics. This document
+outlines how to expose Prometheus metrics for a gRPC server by running a separate HTTP/1.x endpoint using Spring Boot
+Actuator.
+
+### **Problem**
+
+When Prometheus attempts to scrape metrics from a gRPC server, the following error occurs:
+
+```
+io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception: Unexpected HTTP/1.x request: GET /actuator/prometheus
+```
+
+This happens because Prometheus sends HTTP/1.x requests, while the gRPC server only accepts HTTP/2 traffic. To resolve
+this, we expose a dedicated HTTP/1.x endpoint for Prometheus metrics.
+
+### **Solution**
+
+#### **Expose a Separate HTTP/1.x Metrics Endpoint**
+
+We run an HTTP server alongside the gRPC server specifically to expose Prometheus metrics.
+
+#### **Steps**
+
+##### **1. Add Dependencies**
+
+Add the following dependencies to the `pom.xml` of your gRPC application:
+
+```xml
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+<dependency>
+<groupId>io.micrometer</groupId>
+<artifactId>micrometer-registry-prometheus</artifactId>
+</dependency>
+```
+
+These dependencies:
+
+- Enable Spring Boot Actuator to expose system metrics.
+- Configure Prometheus metrics collection.
+
+#### **2. Enable HTTP 1.X Metrics in `application.properties`**
+
+Configure the HTTP server to run on a different port (`8191`) from the gRPC server's port (`8190`).
+
+```properties
+grpc.server.port=8190
+# .. other properties 
+management.server.port=8191
+```
+
+#### **3. Start the Application**
+
+When the application starts:
+
+- The gRPC server continues to listen on its original port.
+- The HTTP server listens on the configured port (`8081`) and serves Prometheus metrics
+  at `http://localhost:8081/actuator/prometheus`.
+
+#### **4. Update Prometheus Configuration**
+
+Update the `prometheus.yml` file to scrape the new metrics endpoint:
+
+```yaml
+scrape_configs:
+  - job_name: 'grpc-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'host.docker.internal:8081' ]  # HTTP metrics endpoint
+```
+
+Restart Prometheus to apply the changes.
+
+### **Verification**
+
+1. **Access Metrics Endpoint:**
+
+   You should see a list of Prometheus metrics when you vist `http://localhost:8191/actuator/prometheus`
+   Take any metrics from this page, example `grpc_server_call_sent_total_compressed_message_size_bytes_bucket` and check
+   in prometheus UI
+
+### **Benefits**
+
+- **Seamless Integration**: Allows Prometheus to scrape gRPC server metrics without modifying core gRPC logic.
+- **Scalability**: Each gRPC server instance can expose its metrics on a separate HTTP endpoint.
+- **Flexibility**: By using Spring Boot Actuator, additional metrics (e.g., health checks) can also be exposed.
+
+### **Conclusion**
+
+By running a lightweight HTTP server alongside the gRPC server, we can easily expose Prometheus-compatible metrics
+without disrupting the gRPC application. This approach ensures compatibility with Prometheus and allows for detailed
+observability of gRPC services.
+
+--- 
