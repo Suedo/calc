@@ -28,6 +28,8 @@ services:
 
   prometheus:
     image: prom/prometheus:v2.46.0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command:
       - --enable-feature=exemplar-storage
       - --config.file=/etc/prometheus/prometheus.yml

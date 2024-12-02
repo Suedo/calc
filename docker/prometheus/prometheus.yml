@@ -3,31 +3,31 @@ global:
   evaluation_interval: 2s
 
 scrape_configs:
-  - job_name: 'prometheus'
-    static_configs:
-      - targets: [ 'localhost:9090' ]
+  #  - job_name: 'prometheus'
+  #    static_configs:
+  #      - targets: [ 'localhost:9090' ]
 
   - job_name: 'test-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'localhost:8180' ]
+      - targets: [ 'host.docker.internal:8180' ]
 
   - job_name: 'generate-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'localhost:8182' ]
+      - targets: [ 'host.docker.internal:8182' ]
 
   - job_name: 'evaluate-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'localhost:8190' ]
+      - targets: [ 'host.docker.internal:8190' ]
 
   - job_name: 'tokenize-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'localhost:8184' ]
+      - targets: [ 'host.docker.internal:8184' ]
 
   - job_name: 'calculator-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'localhost:8192' ]
+      - targets: [ 'host.docker.internal:8192' ]
