@@ -12,7 +12,7 @@ import static example.calc.generator.Util.generateRandomExpression;
 public class GenerateController {
 
     @GetMapping
-    public String generateExpression(@RequestParam(defaultValue = "10") int length) {
+    public String generateExpression(@RequestParam(defaultValue = "15") int length) {
         return generateRandomExpression(length);
     }
 

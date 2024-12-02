@@ -1,11 +1,12 @@
 package example.demo.shared.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import java.net.InetSocketAddress;
@@ -22,7 +23,13 @@ public class RetrofitConfig {
     }
 
     @Bean
-    public Retrofit retrofit() {
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper()
+                .findAndRegisterModules(); // Automatically supports records and Java 17 features
+    }
+
+    @Bean
+    public Retrofit retrofit(ObjectMapper objectMapper) {
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS);
@@ -39,7 +46,8 @@ public class RetrofitConfig {
                 .baseUrl(retrofitProperties.getBaseUrl())
                 .client(clientBuilder.build())
                 .addConverterFactory(ScalarsConverterFactory.create()) // to handle string response
-                .addConverterFactory(GsonConverterFactory.create()) // to handle JSON response
+                //.addConverterFactory(GsonConverterFactory.create()) // to handle JSON response
+                .addConverterFactory(JacksonConverterFactory.create(objectMapper)) // to handle polymorphic sealed hierarchy
                 .build();
     }
 

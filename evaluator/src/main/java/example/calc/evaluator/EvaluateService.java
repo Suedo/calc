@@ -24,7 +24,9 @@ public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase
     private final TokenizeAPIService tokenizeAPIService;
     private final CalculatorGrpc.CalculatorBlockingStub calculatorClient;
 
-    public EvaluateService(TokenizeAPIService tokenizeAPIService, @GrpcClient("calculator") CalculatorGrpc.CalculatorBlockingStub calculatorClient) {
+    public EvaluateService(TokenizeAPIService tokenizeAPIService,
+                           // the value must match the `name` in the grpcClient property: `grpc.client.<name>`
+                           @GrpcClient("calculator-service") CalculatorGrpc.CalculatorBlockingStub calculatorClient) {
         this.tokenizeAPIService = tokenizeAPIService;
         this.calculatorClient = calculatorClient;
     }
