@@ -5,6 +5,7 @@ import example.demo.shared.proto.Evaluate;
 import example.demo.shared.proto.EvaluateServiceGrpc;
 import example.demo.shared.rest.GenerateAPIService;
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +27,7 @@ public class TestController {
     }
 
     @GetMapping
-    public double testFlow() {
+    public ResponseEntity<String> testFlow() {
         try {
             // Step 1: Generate a random expression
             Response<String> response = generateAPIService.generateExpression().execute();
@@ -37,7 +38,8 @@ public class TestController {
                     .setExpression(expression)
                     .build();
 
-            return evaluateServiceClient.evaluate(request).getResult();
+            var result = evaluateServiceClient.evaluate(request).getResult();
+            return ResponseEntity.ok(String.format("%s == %.5f", expression, result));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
