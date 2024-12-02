@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 
 
 @RestController
@@ -29,6 +31,7 @@ public class TestController {
     @GetMapping
     public ResponseEntity<String> testFlow() {
         try {
+            final Instant start = Instant.now();
             // Step 1: Generate a random expression
             Response<String> response = generateAPIService.generateExpression().execute();
             String expression = response.body();
@@ -39,7 +42,8 @@ public class TestController {
                     .build();
 
             var result = evaluateServiceClient.evaluate(request).getResult();
-            return ResponseEntity.ok(String.format("%s == %.5f", expression, result));
+            return ResponseEntity.ok(String.format("generated {%s} and evaluated its value as {%.8f} in %d ms",
+                    expression, result, Duration.between(start, Instant.now()).toMillis()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
