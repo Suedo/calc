@@ -7,13 +7,12 @@ import example.demo.shared.proto.CalculatorGrpc;
 import example.demo.shared.proto.CalculatorOuterClass;
 import example.demo.shared.proto.Evaluate;
 import example.demo.shared.proto.EvaluateServiceGrpc;
-import example.demo.shared.rest.TokenizeAPIService;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import net.devh.boot.grpc.server.service.GrpcService;
-import retrofit2.Response;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.web.client.RestClient;
 
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
@@ -21,13 +20,13 @@ import java.util.List;
 @GrpcService
 public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase {
 
-    private final TokenizeAPIService tokenizeAPIService;
+    private final RestClient restClient;
     private final CalculatorGrpc.CalculatorBlockingStub calculatorClient;
 
-    public EvaluateService(TokenizeAPIService tokenizeAPIService,
+    public EvaluateService(RestClient restClient,
                            // the value must match the `name` in the grpcClient property: `grpc.client.<name>`
                            @GrpcClient("calculator-service") CalculatorGrpc.CalculatorBlockingStub calculatorClient) {
-        this.tokenizeAPIService = tokenizeAPIService;
+        this.restClient = restClient;
         this.calculatorClient = calculatorClient;
     }
 
@@ -35,25 +34,31 @@ public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase
     public void evaluate(Evaluate.EvaluateRequest request, StreamObserver<Evaluate.EvaluateResponse> responseObserver) {
         String expression = request.getExpression();
 
-        try {
-            // Step 1: Tokenize the expression (REST call to Tokenize Service)
-            Response<List<Token>> response = tokenizeAPIService.tokenize(expression).execute();
-            List<Token> tokens = response.body();
+        // Step 1: Tokenize the expression (REST call to Tokenize Service)
+        List<Token> tokens = tokenize(expression);
 
-            // Step 2: Evaluate the tokens (Postfix)
-            assert tokens != null : "Tokens cannot be null";
-            double result = evaluatePostfix(tokens);
+        // Step 2: Evaluate the tokens (Postfix)
+        assert tokens != null : "Tokens cannot be null";
+        double result = evaluatePostfix(tokens);
 
-            // Build the gRPC response
-            Evaluate.EvaluateResponse evaluateResponse = Evaluate.EvaluateResponse.newBuilder()
-                    .setResult(result)
-                    .build();
+        // Build the gRPC response
+        Evaluate.EvaluateResponse evaluateResponse = Evaluate.EvaluateResponse.newBuilder()
+                .setResult(result)
+                .build();
 
-            responseObserver.onNext(evaluateResponse);
-            responseObserver.onCompleted();
-        } catch (IOException e) {
-            responseObserver.onError(e);
-        }
+        responseObserver.onNext(evaluateResponse);
+        responseObserver.onCompleted();
+
+    }
+
+    public List<Token> tokenize(String expression) {
+        return restClient
+                .post()
+                .uri("/tokenize")
+                .body(expression)
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {
+                }); // prevents type-erasure and helps Spring resolve the generic type (List<Token>) at runtime
     }
 
     private double evaluatePostfix(List<Token> postfix) {
