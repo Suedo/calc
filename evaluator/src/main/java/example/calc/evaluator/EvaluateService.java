@@ -1,5 +1,6 @@
 package example.calc.evaluator;
 
+import example.demo.shared.Utils.Serdes;
 import example.demo.shared.domain.NumberToken;
 import example.demo.shared.domain.OperatorToken;
 import example.demo.shared.domain.Token;
@@ -8,6 +9,7 @@ import example.demo.shared.proto.CalculatorOuterClass;
 import example.demo.shared.proto.Evaluate;
 import example.demo.shared.proto.EvaluateServiceGrpc;
 import io.grpc.stub.StreamObserver;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.core.ParameterizedTypeReference;
@@ -17,15 +19,19 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 
+
+@Slf4j
 @GrpcService
 public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase {
 
+    private final Serdes serdes;
     private final RestClient restClient;
     private final CalculatorGrpc.CalculatorBlockingStub calculatorClient;
 
-    public EvaluateService(RestClient restClient,
+    public EvaluateService(Serdes serdes, RestClient restClient,
                            // the value must match the `name` in the grpcClient property: `grpc.client.<name>`
                            @GrpcClient("calculator-service") CalculatorGrpc.CalculatorBlockingStub calculatorClient) {
+        this.serdes = serdes;
         this.restClient = restClient;
         this.calculatorClient = calculatorClient;
     }
@@ -33,13 +39,17 @@ public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase
     @Override
     public void evaluate(Evaluate.EvaluateRequest request, StreamObserver<Evaluate.EvaluateResponse> responseObserver) {
         String expression = request.getExpression();
+        log.info("Received evaluate request with expression: {}", expression);
 
         // Step 1: Tokenize the expression (REST call to Tokenize Service)
         List<Token> tokens = tokenize(expression);
+        log.info("Expression Tokens: {}", serdes.serialize(tokens));
+
 
         // Step 2: Evaluate the tokens (Postfix)
         assert tokens != null : "Tokens cannot be null";
         double result = evaluatePostfix(tokens);
+        log.info("Evaluation Result: {}", result);
 
         // Build the gRPC response
         Evaluate.EvaluateResponse evaluateResponse = Evaluate.EvaluateResponse.newBuilder()

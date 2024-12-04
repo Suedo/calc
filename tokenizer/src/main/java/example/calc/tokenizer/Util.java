@@ -1,4 +1,4 @@
-package example.calc.generator;
+package example.calc.tokenizer;
 
 import example.demo.shared.domain.NumberToken;
 import example.demo.shared.domain.OperatorToken;
