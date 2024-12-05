@@ -20,12 +20,6 @@ public class RestClientConfig {
         log.info("Creating RestClient for {}", restClientProperties.getBaseUrl());
         builder.baseUrl(restClientProperties.getBaseUrl());
 
-        /*
-        todo: figure out why Tracing Context Propagation doesnt work
-        https://docs.spring.io/spring-boot/reference/actuator/tracing.html
-        https://docs.spring.io/spring-boot/reference/actuator/tracing.html#actuator.micrometer-tracing.propagating-traces
-         */
-
 
         if (restClientProperties.isProxyEnabled()) {
             // todo
