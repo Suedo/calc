@@ -1,12 +1,14 @@
 package example.demo.shared.rest;
 
 import example.demo.shared.domain.Token;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class TokenizeApiService {
 
@@ -17,6 +19,7 @@ public class TokenizeApiService {
     }
 
     public List<Token> tokenize(String expression) {
+        log.info("Current Thread: {}", Thread.currentThread().getName());
         return restClient
                 .post()
                 .uri("/tokenize")

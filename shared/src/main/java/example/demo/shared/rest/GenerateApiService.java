@@ -1,5 +1,6 @@
 package example.demo.shared.rest;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -11,6 +12,7 @@ import org.springframework.web.client.RestClient;
  * }
  */
 
+@Slf4j
 @Service
 public class GenerateApiService {
 
@@ -21,6 +23,7 @@ public class GenerateApiService {
     }
 
     public String generate() {
+        log.info("Current Thread: {}", Thread.currentThread().getName());
         return restClient
                 .get()
                 .uri("/generate")

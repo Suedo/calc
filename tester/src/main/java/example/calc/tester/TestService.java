@@ -45,6 +45,7 @@ public class TestService {
     }
 
     private String generateExpression() {
+        log.info("Current Thread: {}", Thread.currentThread().getName());
         return restClient
                 .get()
                 .uri("/generate")
