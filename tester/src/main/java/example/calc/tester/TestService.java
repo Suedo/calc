@@ -29,6 +29,11 @@ public class TestService {
         String expression = generateExpression();
         log.info("Generated expression: {}", expression);
 
+        //dummy calls to check if virtual threads make it parallel
+        String dummy1 = generateExpression();
+        String dummy2 = generateExpression();
+
+
         // Step 2: Evaluate the expression via gRPC
         // Step 2.1: create the request format
         Evaluate.EvaluateRequest request = Evaluate.EvaluateRequest.newBuilder()

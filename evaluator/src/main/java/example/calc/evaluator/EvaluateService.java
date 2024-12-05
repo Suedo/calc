@@ -10,6 +10,8 @@ import net.devh.boot.grpc.server.service.GrpcService;
 
 import java.util.List;
 
+import static example.demo.shared.Utils.Sleeper.sleep;
+
 @Slf4j
 @GrpcService
 public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase {
@@ -28,6 +30,8 @@ public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase
     public void evaluate(Evaluate.EvaluateRequest request, StreamObserver<Evaluate.EvaluateResponse> responseObserver) {
         String expression = request.getExpression();
         log.info("Received evaluate request with expression: {}", expression);
+
+        sleep(100);
 
         // Step 1: Tokenize the expression (REST call to Tokenize Service)
         List<Token> tokens = tokenizeService.tokenize(expression);

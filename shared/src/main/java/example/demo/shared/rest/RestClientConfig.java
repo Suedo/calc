@@ -20,8 +20,7 @@ public class RestClientConfig {
         this.restClientProperties = restClientProperties;
     }
 
-    @Bean
-    @Qualifier("virtualThreadHttpClient")
+    @Bean("virtualThreadHttpClient")
     public HttpClient httpClient(@Qualifier("virtualThreadExecutor") ExecutorService virtualThreadExecutorService) {
         return HttpClient.newBuilder()
                 .executor(virtualThreadExecutorService)

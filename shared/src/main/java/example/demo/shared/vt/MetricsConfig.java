@@ -5,7 +5,6 @@ import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,8 +15,7 @@ import java.util.concurrent.Executors;
 @Configuration
 public class MetricsConfig {
 
-    @Bean
-    @Qualifier("virtualThreadExecutor")
+    @Bean("virtualThreadExecutor")
     public ExecutorService taskExecutor(MeterRegistry registry) {
         log.info("Creating Virtual Thread Executor");
         ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();

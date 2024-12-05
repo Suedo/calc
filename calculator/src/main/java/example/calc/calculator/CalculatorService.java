@@ -6,6 +6,8 @@ import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 
+import static example.demo.shared.Utils.Sleeper.sleep;
+
 @Slf4j
 @GrpcService
 public class CalculatorService extends CalculatorGrpc.CalculatorImplBase {
@@ -19,6 +21,8 @@ public class CalculatorService extends CalculatorGrpc.CalculatorImplBase {
         final double b = request.getB();
 
         log.info("CalculateOperation: {} > {}, {}", operation, a, b);
+
+        sleep(10);
 
         double result = switch (operation) {
             case ADD -> a + b;
