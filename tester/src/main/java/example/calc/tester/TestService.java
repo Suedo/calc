@@ -20,12 +20,10 @@ public class TestService {
 
     private final RestClient restClient;
     private final ExecutorService executor;
-    //private final ContextRegistry contextRegistry;
 
     public TestService(RestClient restClient, ExecutorService executor) {
         this.restClient = restClient;
         this.executor = executor;
-        //this.contextRegistry = contextRegistry;
     }
 
     public String testFlow() {
@@ -34,7 +32,7 @@ public class TestService {
             final Instant start = Instant.now();
             // Step 1: Generate a random expression
             var expressionF = this.executor.submit(this::generateExpression);
-            var dummy1F = this.executor.submit(this::generateExpression);
+            var dummy1F = this.executor.submit(this::generateExpression); // dummy task to check parallel execution
             var dummy2F = this.executor.submit(this::generateExpression);
 
             // Step 2: Evaluate the expression via gRPC
