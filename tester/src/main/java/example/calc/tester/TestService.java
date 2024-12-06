@@ -2,6 +2,10 @@ package example.calc.tester;
 
 import example.demo.shared.proto.Evaluate;
 import example.demo.shared.proto.EvaluateServiceGrpc;
+import io.micrometer.context.ContextRegistry;
+import io.micrometer.context.ContextSnapshot;
+import io.micrometer.context.ContextSnapshotFactory;
+import io.micrometer.observation.annotation.Observed;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
@@ -20,25 +24,31 @@ public class TestService {
 
     private final RestClient restClient;
     private final ExecutorService executor;
+    private final ContextRegistry contextRegistry;
 
-    public TestService(RestClient restClient, ExecutorService executor) {
+    public TestService(RestClient restClient, ExecutorService executor, ContextRegistry contextRegistry) {
         this.restClient = restClient;
         this.executor = executor;
+        this.contextRegistry = contextRegistry;
     }
 
     public String testFlow() {
         try {
+            log.info("testFlow: Current Thread: {}", Thread.currentThread());
             final Instant start = Instant.now();
             // Step 1: Generate a random expression
-            String expression = this.executor.submit(this::generateExpression).get();
-            //dummy calls to check if virtual threads make it parallel
-            String dummy1 = this.executor.submit(this::generateExpression).get();
-            String dummy2 = this.executor.submit(this::generateExpression).get();
+            //ContextSnapshot snapshot = ContextSnapshot.captureAll();
+            ContextSnapshot snapshot = ContextSnapshotFactory.builder().contextRegistry(contextRegistry).build().captureAll();
 
-            log.info("Generated expression: {}", expression);
+            var expressionF = this.executor.submit(snapshot.wrap(this::generateExpression));
+            var dummy1F = this.executor.submit(snapshot.wrap(this::generateExpression));
+            var dummy2F = this.executor.submit(snapshot.wrap(this::generateExpression));
+
 
             // Step 2: Evaluate the expression via gRPC
             // Step 2.1: create the request format
+            String expression = expressionF.get();
+            log.info("testFlow: expression obtained: {}, Thread: {}", expression, Thread.currentThread());
             Evaluate.EvaluateRequest request = Evaluate.EvaluateRequest.newBuilder()
                     .setExpression(expression)
                     .build();
@@ -56,8 +66,9 @@ public class TestService {
         }
     }
 
+    @Observed
     private String generateExpression() {
-        log.info("Current Thread: {}", Thread.currentThread());
+        log.info("generateExpression: Current Thread: {}", Thread.currentThread());
         return restClient
                 .get()
                 .uri("/generate")
