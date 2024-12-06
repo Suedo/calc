@@ -1,7 +1,5 @@
 package example.calc.tester;
 
-import example.demo.shared.config.MDCThreadLocalAccessor;
-import io.micrometer.context.ContextRegistry;
 import io.micrometer.core.instrument.binder.grpc.ObservationGrpcClientInterceptor;
 import io.micrometer.observation.ObservationRegistry;
 import lombok.extern.slf4j.Slf4j;
@@ -39,11 +37,4 @@ public class TesterApplication {
         };
     }
 
-    @Bean
-    public ContextRegistry contextRegistry() {
-        final MDCThreadLocalAccessor mdcThreadLocalAccessor = new MDCThreadLocalAccessor();
-        final ContextRegistry contextRegistry = new ContextRegistry();
-        contextRegistry.registerThreadLocalAccessor(mdcThreadLocalAccessor);
-        return contextRegistry;
-    }
 }

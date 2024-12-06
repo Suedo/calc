@@ -1,5 +1,8 @@
 package example.demo.shared.config;
 
+import io.micrometer.context.ContextExecutorService;
+import io.micrometer.context.ContextSnapshot;
+import io.micrometer.context.ContextSnapshotFactory;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +15,7 @@ import javax.annotation.PreDestroy;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 @Slf4j
 @Configuration
@@ -21,8 +25,14 @@ public class ExecutorConfig {
     @Bean
     @ConditionalOnThreading(Threading.VIRTUAL)
     public ExecutorService virtualThreadExecutor(MeterRegistry registry) {
+
+        // https://stackoverflow.com/a/78765658/2715083
+        // automatic context propagation via micrometer context propagation support
         log.info("Creating Virtual Thread Executor");
-        this.executorService = Executors.newVirtualThreadPerTaskExecutor();
+        this.executorService = ContextExecutorService.wrap(
+                Executors.newVirtualThreadPerTaskExecutor(),
+                (Supplier<ContextSnapshot>) () -> ContextSnapshotFactory.builder().build().captureAll()
+        );
         ExecutorServiceMetrics.monitor(registry, executorService, "custom.executor");
         return this.executorService;
     }
