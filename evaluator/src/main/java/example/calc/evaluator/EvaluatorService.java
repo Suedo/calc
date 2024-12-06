@@ -42,7 +42,7 @@ public class EvaluatorService {
     }
 
     private List<Token> tokenize(String expression) {
-        log.info("Current Thread: {}", Thread.currentThread().getName());
+        log.info("Current Thread: {}", Thread.currentThread());
         return restClient
                 .post()
                 .uri("/tokenize")
