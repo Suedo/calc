@@ -1,4 +1,4 @@
-package example.demo.shared.rest;
+package example.demo.shared.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;

@@ -5,7 +5,6 @@ import io.micrometer.core.instrument.binder.grpc.ObservationGrpcServerIntercepto
 import io.micrometer.observation.ObservationRegistry;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.channelfactory.GrpcChannelConfigurer;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -33,14 +32,11 @@ public class EvaluatorApplication {
     }
 
     @Bean
-    public GrpcChannelConfigurer channelConfigurer(
-            ObservationGrpcClientInterceptor grpcClientInterceptor,
-            @Qualifier("virtualThreadExecutor") ExecutorService virtualThreadExecutorService
-    ) {
+    public GrpcChannelConfigurer channelConfigurer(ExecutorService executorService,
+                                                   ObservationGrpcClientInterceptor grpcClientInterceptor) {
         return (channelBuilder, name) -> {
             log.info("channel builder {}", name);
-            channelBuilder.intercept(grpcClientInterceptor)
-                    .executor(virtualThreadExecutorService);
+            channelBuilder.intercept(grpcClientInterceptor).executor(executorService);
         };
     }
 
