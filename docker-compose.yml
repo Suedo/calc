@@ -10,6 +10,16 @@ services:
   #    volumes:
   #      - ./mysql-data:/var/lib/mysql
   #      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+  keycloak:
+    image: keycloak/keycloak:26.0
+    container_name: keycloak
+    command:
+      - start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
   tempo:
     image: grafana/tempo:2.2.2
     command: [ "-config.file=/etc/tempo.yaml" ]
