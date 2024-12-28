@@ -33,11 +33,6 @@
             <version>${tomcat.annotations.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--    lombok used to be here, but I removed it.    -->
-        <!--    added it to dependencyManagement(with version) and dependencies(without version) in parent    -->
-        <!--    since it is in dependencies section in parent, i dont need to define it here    -->
-        <!--    todo: using the same concept, clean up the rest of the pom files    -->
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
@@ -55,6 +50,12 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>2.18.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>3.4.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

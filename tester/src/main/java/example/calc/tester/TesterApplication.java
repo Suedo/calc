@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.util.concurrent.ExecutorService;
+
 @Slf4j
 @SpringBootApplication
 @ComponentScan(basePackages = {"example.calc.tester", "example.demo.shared"})
@@ -24,10 +26,15 @@ public class TesterApplication {
     }
 
     @Bean
-    public GrpcChannelConfigurer channelConfigurer(ObservationGrpcClientInterceptor grpcClientInterceptor) {
+    public GrpcChannelConfigurer channelConfigurer(
+            ObservationGrpcClientInterceptor grpcClientInterceptor,
+            ExecutorService executorService
+    ) {
         return (channelBuilder, name) -> {
             log.info("channel builder {}", name);
-            channelBuilder.intercept(grpcClientInterceptor);
+            channelBuilder.intercept(grpcClientInterceptor)
+                    .executor(executorService);
         };
     }
+
 }

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static example.demo.shared.Utils.Sleeper.sleep;
+
 @Slf4j
 @RestController
 @RequestMapping("/tokenize")
@@ -31,6 +33,8 @@ public class TokenizeController {
     @PostMapping
     public List<Token> tokenizeExpression(@RequestBody String expression) {
         log.info("Tokenize request received: {}", expression);
+
+        sleep(100);
 
         List<Token> tokens = Util.tokenize(expression);
         log.info("Tokens extracted: {}", serdes.serialize(tokens));

@@ -1,27 +1,21 @@
 package example.calc.evaluator;
 
-import example.demo.shared.Utils.Serdes;
-import example.demo.shared.domain.Token;
 import example.demo.shared.proto.Evaluate;
 import example.demo.shared.proto.EvaluateServiceGrpc;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 
-import java.util.List;
-
 @Slf4j
 @GrpcService
-public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase {
+public class EvaluatorGrpcServer extends EvaluateServiceGrpc.EvaluateServiceImplBase {
 
-    private final TokenizeService tokenizeService;
+    private final EvaluatorService evaluatorService;
     private final PostfixEvaluationService postfixEvaluationService;
-    private final Serdes serdes;
 
-    public EvaluateService(TokenizeService tokenizeService, PostfixEvaluationService postfixEvaluationService, Serdes serdes) {
-        this.tokenizeService = tokenizeService;
+    public EvaluatorGrpcServer(EvaluatorService evaluatorService, PostfixEvaluationService postfixEvaluationService) {
+        this.evaluatorService = evaluatorService;
         this.postfixEvaluationService = postfixEvaluationService;
-        this.serdes = serdes;
     }
 
     @Override
@@ -29,15 +23,7 @@ public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase
         String expression = request.getExpression();
         log.info("Received evaluate request with expression: {}", expression);
 
-        // Step 1: Tokenize the expression (REST call to Tokenize Service)
-        List<Token> tokens = tokenizeService.tokenize(expression);
-        log.info("Expression Tokens: {}", serdes.serialize(tokens));
-
-
-        // Step 2: Evaluate the tokens (Postfix)
-        assert tokens != null : "Tokens cannot be null";
-        double result = postfixEvaluationService.evaluatePostfix(tokens);
-        log.info("Evaluation Result: {}", result);
+        double result = evaluatorService.evaluate(expression);
 
         // Build the gRPC response
         Evaluate.EvaluateResponse evaluateResponse = Evaluate.EvaluateResponse.newBuilder()
@@ -46,6 +32,5 @@ public class EvaluateService extends EvaluateServiceGrpc.EvaluateServiceImplBase
 
         responseObserver.onNext(evaluateResponse);
         responseObserver.onCompleted();
-
     }
 }
