@@ -10,18 +10,18 @@ services:
   #    volumes:
   #      - ./mysql-data:/var/lib/mysql
   #      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
-  keycloak:
-    image: keycloak/keycloak:26.0
-    container_name: keycloak
-    command:
-      - start-dev
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-    ports:
-      - "8080:8080"
+  #  keycloak:
+  #    image: keycloak/keycloak:26.0
+  #    container_name: keycloak
+  #    command:
+  #      - start-dev
+  #    environment:
+  #      KEYCLOAK_ADMIN: admin
+  #      KEYCLOAK_ADMIN_PASSWORD: admin
+  #    ports:
+  #      - "8080:8080"
   tempo:
-    image: grafana/tempo:2.2.2
+    image: grafana/tempo:2.6.1
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
       - ./docker/tempo/tempo.yml:/etc/tempo.yaml:ro
@@ -37,7 +37,7 @@ services:
       - "3100:3100"
 
   prometheus:
-    image: prom/prometheus:v2.46.0
+    image: prom/prometheus:v3.0.1
     extra_hosts:
       - "host.docker.internal:host-gateway"
     command:
@@ -49,7 +49,7 @@ services:
       - "9090:9090"
 
   grafana:
-    image: grafana/grafana:10.1.0
+    image: grafana/grafana:11.4.0
     volumes:
       - ./docker/grafana:/etc/grafana/provisioning/datasources:ro
     environment:
