@@ -2,6 +2,7 @@ package example.calc.evaluator;
 
 import example.demo.shared.proto.Evaluate;
 import example.demo.shared.proto.EvaluateServiceGrpc;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -20,17 +21,24 @@ public class EvaluatorGrpcServer extends EvaluateServiceGrpc.EvaluateServiceImpl
 
     @Override
     public void evaluate(Evaluate.EvaluateRequest request, StreamObserver<Evaluate.EvaluateResponse> responseObserver) {
-        String expression = request.getExpression();
-        log.info("Received evaluate request with expression: {}", expression);
+        try {
+            String expression = request.getExpression();
+            log.info("Received evaluate request with expression: {}", expression);
 
-        double result = evaluatorService.evaluate(expression);
+            double result = evaluatorService.evaluate(expression);
 
-        // Build the gRPC response
-        Evaluate.EvaluateResponse evaluateResponse = Evaluate.EvaluateResponse.newBuilder()
-                .setResult(result)
-                .build();
+            // Build the gRPC response
+            Evaluate.EvaluateResponse evaluateResponse = Evaluate.EvaluateResponse.newBuilder()
+                    .setResult(result)
+                    .build();
 
-        responseObserver.onNext(evaluateResponse);
-        responseObserver.onCompleted();
+            responseObserver.onNext(evaluateResponse);
+            responseObserver.onCompleted();
+        } catch (RuntimeException e) {
+            log.error("Error processing gRPC evaluation request", e);
+            responseObserver.onError(Status.INVALID_ARGUMENT
+                    .withDescription(e.getMessage())
+                    .asRuntimeException());
+        }
     }
 }

@@ -56,6 +56,26 @@ public class TestService {
         }
     }
 
+    public String evaluateExpression(String expression) {
+        try {
+            log.info("Evaluating user expression: {}", expression);
+            final Instant start = Instant.now();
+
+            Evaluate.EvaluateRequest request = Evaluate.EvaluateRequest.newBuilder()
+                    .setExpression(expression)
+                    .build();
+
+            double result = evaluateServiceClient.evaluate(request).getResult();
+            final String resultString = String.format("expression {%s} evaluated to: {%.8f} in %d ms",
+                    expression, result, Duration.between(start, Instant.now()).toMillis());
+            log.info(resultString);
+            return resultString;
+        } catch (Exception e) {
+            log.error("Evaluation failed for expression: {}", expression, e);
+            throw new RuntimeException("Failed to evaluate expression: " + e.getMessage());
+        }
+    }
+
     private String generateExpression() {
         log.info("generateExpression: Current Thread: {}", Thread.currentThread());
         return restClient

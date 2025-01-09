@@ -5,6 +5,8 @@ import example.demo.shared.domain.OperatorToken;
 import example.demo.shared.domain.Token;
 import example.demo.shared.proto.CalculatorGrpc;
 import example.demo.shared.proto.CalculatorOuterClass;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
@@ -38,8 +40,13 @@ public class PostfixEvaluationService {
                         .setOperation(mapOperator(operatorToken))
                         .build();
 
-                double result = calculatorClient.calculate(request).getResult();
-                stack.push(result);
+                try {
+                    double result = calculatorClient.calculate(request).getResult();
+                    stack.push(result);
+                } catch (StatusRuntimeException e) {
+                    // Handle gRPC-specific exceptions
+                    handleGrpcException(e, operatorToken, a, b);
+                }
             }
         }
         return stack.pop();
@@ -53,5 +60,16 @@ public class PostfixEvaluationService {
             case '/' -> CalculatorOuterClass.CalculatorRequest.Operation.DIVIDE;
             default -> throw new IllegalArgumentException("Unknown operator: " + operatorToken.operator());
         };
+    }
+
+    private void handleGrpcException(StatusRuntimeException e, OperatorToken operatorToken, double a, double b) {
+        log.error("gRPC error during evaluation: {}", e.getStatus().getDescription());
+        if (e.getStatus().getCode() == Status.Code.INVALID_ARGUMENT) {
+            if (operatorToken.operator() == '/' && b == 0) {
+                throw new RuntimeException("Division by zero error: " + e.getStatus().getDescription());
+            }
+            throw new RuntimeException("Invalid operation error: " + e.getStatus().getDescription());
+        }
+        throw new RuntimeException("Unexpected error from calculator service: " + e.getStatus().getDescription());
     }
 }
